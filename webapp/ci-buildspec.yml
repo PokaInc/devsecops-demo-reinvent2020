@@ -1,0 +1,13 @@
+---
+version: '0.2'
+phases:
+  pre_build:
+    commands:
+    - echo Setting current directory
+    - cd webapp
+    - echo Installing dependencies...
+    - curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin
+  build:
+    commands:
+    - docker build -t webapp:$CODEBUILD_RESOLVED_SOURCE_VERSION .
+    - trivy i --severity CRITICAL --exit-code 1 webapp:$CODEBUILD_RESOLVED_SOURCE_VERSION

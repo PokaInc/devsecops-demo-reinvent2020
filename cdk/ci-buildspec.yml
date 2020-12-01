@@ -1,0 +1,20 @@
+---
+version: '0.2'
+phases:
+  pre_build:
+    commands:
+    - echo Setting current directory
+    - cd cdk
+    - echo Preparing reports folder
+    - mkdir reports
+    - echo Installing dependencies...
+    - npm ci
+    - pip install checkov
+  build:
+    commands:
+    - npx cdk synth
+    - checkov --skip-check CKV_AWS_18,CKV_AWS_21,CKV_AWS_2,CKV_AWS_66,CKV_AWS_7 -d cdk.out/ -o junitxml > reports/checkov.xml
+reports:
+  checkov:
+    files:
+    - cdk/reports/*.xml
